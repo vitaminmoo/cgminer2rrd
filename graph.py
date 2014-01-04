@@ -3,8 +3,8 @@
 import rrdtool
 
 devs = [0,1,2,3]
-
 colors = ['#00B25C','#0A67A3','#FF8E00','#FF4100']
+
 srrd = 'status.rrd'
 crrds = ['dev-%i.rrd' % _ for _ in devs]
 
@@ -12,7 +12,7 @@ def cdefs(ds):
     return ['DEF:ds%i=%s:%s:AVERAGE' % (i, crrds[i], ds) for i in devs]
     
 def lines(ds):
-    return ['LINE1:ds%i%s:Device %i:STACK' % (i,colors[i], i) for i in devs]
+    return ['LINE1:ds%i%s:Device %i' % (i,colors[i], i) for i in devs]
 
 graphs = [
     {
@@ -26,10 +26,12 @@ graphs = [
     {
         'ds': 'MHS_5s',
         'vertical-label': 'Hashes/s',
+        'lines': lambda x: ['%s:STACK' % _ for _ in lines(x['ds'])],
     },
     {
         'ds': 'Total_MH',
         'vertical-label': 'Hashes/s',
+        'lines': lambda x: ['%s:STACK' % _ for _ in lines(x['ds'])],
     },
     {
         'ds': 'Rejected',
@@ -52,6 +54,6 @@ for graph in graphs:
         '--end', "-1",
         '--vertical-label', graph['vertical-label'],
         '--title', "Device %s" % graph['ds'],
-        cdefs(graph['ds']),
-        lines(graph['ds']),
+        graph['cdefs'](graph) if 'cdefs' in graph else cdefs(graph['ds']),
+        graph['lines'](graph) if 'lines' in graph else lines(graph['ds']),
     )
