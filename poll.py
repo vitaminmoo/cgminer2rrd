@@ -15,7 +15,7 @@ def sanitize(key):
 def sanitize_val(key, val):
     if re.match(r'Difficulty ', key):
         return int(val)
-    elif key == 'Total MH':
+    elif key == 'Total MH' or key == 'MHS 5s':
         return int(val * 1000000)
     else:
         return val

@@ -73,8 +73,6 @@ graphs = [
 for span, start in spans.iteritems():
     for graph in graphs:
         file_name = '%s_%s.png' % (graph['ds'], span)
-        graph['lines'](graph) if 'lines' in graph else lines(graph['ds'])
-        graph['prints'](graph) if 'prints' in graph else prints(graph['ds'])
 
         rrdtool.graph(
             '%s.tmp' % file_name,
