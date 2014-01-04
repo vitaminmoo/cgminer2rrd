@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-import sys
-import rrdtool
 import api
 import json
+import os
 import re
+import rrdtool
+import sys
 
 def sanitize(key):
     key = re.sub(r'%$', r'_Per', key)
@@ -43,7 +44,7 @@ def key_filter(key):
         'GPU',
         'Last Share Pool',
         'Last Share Time',
-        'Last Valid Work'
+        'Last Valid Work',
         'Status',
     ]:
         return False
@@ -70,16 +71,19 @@ if not os.path.exists('summary.rrd'):
     print "summary bs:"
     print json.dumps(data_sources, indent=2)
     rrdtool.create(
-        'status.rrd',
+        'summary.rrd',
         '--step', '5',
         data_sources,
-        'RRA:AVERAGE:0.5:5:720',
-        'RRA:AVERAGE:0.5:60:24',
+        'RRA:AVERAGE:0.5:1:720',     # 1h
+        'RRA:AVERAGE:0.5:120:720',   # 1d
+        'RRA:AVERAGE:0.5:840:720',   # 7d
+        'RRA:AVERAGE:0.5:3600:720',  # 30d
+        'RRA:AVERAGE:0.5:43800:720', # 365d
     )
 else:
     # update
-    items = get_values(data)
-    rrdtool.update('status.rrd','N:%s' % ':'.join(items))
+    items = get_values(summary)
+    rrdtool.update('summary.rrd','N:%s' % ':'.join(items))
 
 # now handle each card
 devs = api.devs()
@@ -96,11 +100,13 @@ for dev in devs:
             rrd,
             '--step', '5',
             data_sources,
-            'RRA:AVERAGE:0.5:5:720',
-            'RRA:AVERAGE:0.5:60:24',
+            'RRA:AVERAGE:0.5:1:720',     # 1h
+            'RRA:AVERAGE:0.5:120:720',   # 1d
+            'RRA:AVERAGE:0.5:840:720',   # 7d
+            'RRA:AVERAGE:0.5:3600:720',  # 30d
+            'RRA:AVERAGE:0.5:43800:720', # 365d
         )
     else:
         # update
-        for dev in devs:
-            items = get_values(data)
-            rrdtool.update(rrd, 'N:%s' % ':'.join(items))
+        values = get_values(dev)
+        rrdtool.update(rrd, 'N:%s' % ':'.join(values))

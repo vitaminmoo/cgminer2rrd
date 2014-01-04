@@ -44,16 +44,17 @@ graphs = [
 ]
 
 
-for graph in graphs:
-    rrdtool.graph(
-        '%s.png' % (graph['ds']),
-        '--imgformat', 'PNG',
-        '--width', '720',
-        '--height', '200',
-        '--start', "-7200",
-        '--end', "-1",
-        '--vertical-label', graph['vertical-label'],
-        '--title', "Device %s" % graph['ds'],
-        graph['cdefs'](graph) if 'cdefs' in graph else cdefs(graph['ds']),
-        graph['lines'](graph) if 'lines' in graph else lines(graph['ds']),
-    )
+for start in [-3600,-86400,-604800,-2592000,-31536000]:
+    for graph in graphs:
+        rrdtool.graph(
+            '%s%s.png' % (graph['ds'], start),
+            '--imgformat', 'PNG',
+            '--width', '720',
+            '--height', '200',
+            '--start', str(start),
+            '--end', "-1",
+            '--vertical-label', graph['vertical-label'],
+            '--title', "Device %s" % graph['ds'],
+            graph['cdefs'](graph) if 'cdefs' in graph else cdefs(graph['ds']),
+            graph['lines'](graph) if 'lines' in graph else lines(graph['ds']),
+        )
