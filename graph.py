@@ -2,7 +2,7 @@
 
 import rrdtool
 
-devs = devs
+devs = [0,1,2,3]
 
 colors = ['#00B25C','#0A67A3','#FF8E00','#FF4100']
 srrd = 'status.rrd'
