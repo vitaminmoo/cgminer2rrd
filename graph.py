@@ -6,7 +6,7 @@ devs = [0,1,2,3]
 
 colors = ['#00B25C','#0A67A3','#FF8E00','#FF4100']
 srrd = 'status.rrd'
-crrds = ['dev-%i.rrd' % _ for _ in devs]]
+crrds = ['dev-%i.rrd' % _ for _ in devs]
 
 def cdefs(ds):
     return ['DEF:ds%i=%s:%s:AVERAGE' % (i, crrds[i], ds) for i in devs]
