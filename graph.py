@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rrdtool
+import os
 
 devs = [0,1,2,3]
 colors = ['#00B25C','#0A67A3','#FF8E00','#FF4100']
@@ -46,8 +47,9 @@ graphs = [
 
 for start in [-3600,-86400,-604800,-2592000,-31536000]:
     for graph in graphs:
+        file_name = '%s%s.png' % (graph['ds'], start)
         rrdtool.graph(
-            '%s%s.png' % (graph['ds'], start),
+            '%s.tmp' % file_name,
             '--imgformat', 'PNG',
             '--width', '720',
             '--height', '200',
@@ -58,3 +60,4 @@ for start in [-3600,-86400,-604800,-2592000,-31536000]:
             graph['cdefs'](graph) if 'cdefs' in graph else cdefs(graph['ds']),
             graph['lines'](graph) if 'lines' in graph else lines(graph['ds']),
         )
+        os.rename('%s.tmp' % (file_name), file_name)
