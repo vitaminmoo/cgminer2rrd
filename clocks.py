@@ -16,6 +16,7 @@ core_min = 780
 core_max = 800
 core_step = 5
 desired_accuracy_in_mhs = 0.001
+inifity = 1.0e24
 
 import numpy as np
 import scipy as sp
@@ -24,6 +25,8 @@ import scipy.stats
 def mean_confidence(data, confidence=0.95):
     a = 1.0*np.array(data)
     n = len(a)
+    if n == 0:
+      return infinity
     m, se = np.mean(a), scipy.stats.sem(a)
     h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
     return h
