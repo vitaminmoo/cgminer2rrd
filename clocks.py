@@ -39,7 +39,7 @@ skip = []
 try:
     with open(csv, 'r') as output:
         for mem, core, mhz in [_.split(',') for _ in output]:
-            skip.append('%s,%s' % (mem,core))
+            skip.append((mem,core))
 except IOError:
     with open(csv, 'w') as output:
     	output.write('mem,core,mhs\n')
@@ -47,9 +47,10 @@ except IOError:
 
 with open(csv, 'a') as output:
     for mem, core in product(range(mem_min, mem_max, mem_step), range(core_min, core_max, core_step)):
-        if not '%i,%i' % (mem, core) in skip:
+        if not (mem, core) in skip:
             os.system('aticonfig --adapter=all --odsc=%i,%i >/dev/null' % (core,mem))
             samples = []
+            time.sleep(10) # wait 15s for first sample, 5s else
             while len(samples) < 3 or mean_confidence(samples) > desired_accuracy_in_mhs:
               time.sleep(5)
               sample = api.devs()[card]['MHS 5s']
