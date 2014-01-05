@@ -26,7 +26,7 @@ def mean_confidence(data, confidence=0.95):
     a = 1.0*np.array(data)
     n = len(a)
     if n == 0:
-      print "infinity"
+      print "not enough data"
       return infinity
     m, se = np.mean(a), scipy.stats.sem(a)
     h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
@@ -54,7 +54,6 @@ with open(csv, 'a') as output:
               time.sleep(5)
               sample = api.devs()[card]['MHS 5s']
               samples.extend([sample])
-              print samples
             mhs = np.mean(np.array(samples))
             output.write('%i,%i,%f\n' % (mem, core, mhs))
             output.flush()
