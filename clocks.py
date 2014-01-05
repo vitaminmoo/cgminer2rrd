@@ -26,9 +26,11 @@ def mean_confidence(data, confidence=0.95):
     a = 1.0*np.array(data)
     n = len(a)
     if n == 0:
+      print "infinity"
       return infinity
     m, se = np.mean(a), scipy.stats.sem(a)
     h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
+    print "h: " + str(h)
     return h
 
 
@@ -40,7 +42,7 @@ try:
             skip.append('%s,%s' % (mem,core))
 except IOError:
     with open(csv, 'w') as output:
-    	output.write('mem,core,mhs')
+    	output.write('mem,core,mhs\n')
     pass
 
 with open(csv, 'a') as output:
@@ -48,7 +50,7 @@ with open(csv, 'a') as output:
         if not '%i,%i' % (mem, core) in skip:
             os.system('aticonfig --adapter=all --odsc=%i,%i >/dev/null' % (core,mem))
             samples=[]
-            while mean_confidence(samples) < desired_accuracy_in_mhs:
+            while len(samples) < 3 and mean_confidence(samples) > desired_accuracy_in_mhs:
               time.sleep(5)
               sample = api.devs()[card]['MHS 5s']
               samples.append(sample)
