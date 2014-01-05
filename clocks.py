@@ -12,8 +12,8 @@ card = 1
 mem_min = 1250
 mem_max = 1500
 mem_step = 5
-core_min = 890
-core_max = 895
+core_min = 780
+core_max = 800
 core_step = 5
 
 skip = []
@@ -33,5 +33,6 @@ with open(csv, 'a') as output:
             time.sleep(15)
             mhs = api.devs()[card]['MHS 5s']
             output.write('%i,%i,%f\n' % (mem, core, mhs))
+            output.flush()
             print '%i,%i,%f' % (mem, core, mhs)
             sys.stdout.flush()
