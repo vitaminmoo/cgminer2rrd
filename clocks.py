@@ -22,7 +22,9 @@ try:
         for mem, core, mhz in [_.split(',') for _ in output]:
             skip.append('%s,%s' % (mem,core))
 except IOError:
-   pass
+    with open(csv, 'w') as output:
+    	output.write('mem,core,mhs')
+    pass
 
 with open(csv, 'a') as output:
     for mem, core in product(range(mem_min, mem_max, mem_step), range(core_min, core_max, core_step)):
@@ -31,4 +33,5 @@ with open(csv, 'a') as output:
             time.sleep(15)
             mhs = api.devs()[card]['MHS 5s']
             output.write('%i,%i,%f\n' % (mem, core, mhs))
+            print '%i,%i,%f' % (mem, core, mhs)
             sys.stdout.flush()
