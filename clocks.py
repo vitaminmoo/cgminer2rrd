@@ -51,7 +51,7 @@ with open(csv, 'a') as output:
             while len(samples) < 3 and mean_confidence(samples) > desired_accuracy_in_mhs:
               time.sleep(5)
               sample = api.devs()[card]['MHS 5s']
-              samples.append(sample)
+              samples.extend([sample])
               print samples
             mhs = np.mean(np.array(samples))
             output.write('%i,%i,%f\n' % (mem, core, mhs))
