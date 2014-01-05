@@ -7,7 +7,7 @@ import api
 import sys
 
 csv='mhs.csv'
-card = 1
+card = 0
 
 mem_min = 1250
 mem_max = 1500
