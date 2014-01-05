@@ -15,6 +15,18 @@ mem_step = 5
 core_min = 780
 core_max = 800
 core_step = 5
+desired_accuracy_in_mhs = 0.001
+
+import numpy as np
+import scipy as sp
+import scipy.stats
+
+def mean_confidence(data, confidence=0.95):
+    a = 1.0*np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
+    return h
 
 
 
@@ -32,8 +44,12 @@ with open(csv, 'a') as output:
     for mem, core in product(range(mem_min, mem_max, mem_step), range(core_min, core_max, core_step)):
         if not '%i,%i' % (mem, core) in skip:
             os.system('aticonfig --adapter=all --odsc=%i,%i >/dev/null' % (core,mem))
-            time.sleep(15)
-            mhs = api.devs()[card]['MHS 5s']
+            samples=[]
+            while mean_confidence(samples) < desired_accuracy_in_mhs:
+              time.sleep(5)
+              sample = api.devs()[card]['MHS 5s']
+              samples.append(sample)
+            mhs = np.mean(samples)
             output.write('%i,%i,%f\n' % (mem, core, mhs))
             output.flush()
             print '%i,%i,%f' % (mem, core, mhs)
