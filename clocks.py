@@ -49,7 +49,7 @@ with open(csv, 'a') as output:
     for mem, core in product(range(mem_min, mem_max, mem_step), range(core_min, core_max, core_step)):
         if not '%i,%i' % (mem, core) in skip:
             os.system('aticonfig --adapter=all --odsc=%i,%i >/dev/null' % (core,mem))
-            samples=[]
+            samples = np.array([])
             while len(samples) < 3 and mean_confidence(samples) > desired_accuracy_in_mhs:
               time.sleep(5)
               sample = api.devs()[card]['MHS 5s']
