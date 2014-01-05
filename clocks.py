@@ -50,7 +50,7 @@ with open(csv, 'a') as output:
         if not '%i,%i' % (mem, core) in skip:
             os.system('aticonfig --adapter=all --odsc=%i,%i >/dev/null' % (core,mem))
             samples = []
-            while len(samples) < 3 and mean_confidence(samples) > desired_accuracy_in_mhs:
+            while len(samples) < 3 or mean_confidence(samples) > desired_accuracy_in_mhs:
               time.sleep(5)
               sample = api.devs()[card]['MHS 5s']
               samples.extend([sample])
