@@ -1,0 +1,10 @@
+*.rrd
+*.png
+*.csv
+*.pyc
+*.pyo
+*.swp
+.RData
+.Rhistory
+Rplots.pdf
+/dev/
