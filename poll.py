@@ -15,6 +15,8 @@ def sanitize(key):
 def sanitize_val(key, val):
     if re.match(r'Difficulty ', key):
         return int(val)
+    if re.search(r'Clock$', key):
+        return int(val * 1000000)
     elif key == 'Total MH' or key == 'MHS 5s':
         return int(val * 1000000)
     else:
@@ -26,6 +28,8 @@ def categorize(key):
     elif key.endswith(' 5s') or key.endswith(' av'):
         return 'GAUGE:20:U:U'
     elif key.startswith('GPU'):
+        return 'GAUGE:20:U:U'
+    elif key.startswith('Memory'):
         return 'GAUGE:20:U:U'
     elif key == 'Work Utility' or key == 'Utility':
         return 'GAUGE:20:0:U'

@@ -9,12 +9,12 @@ import sys
 csv='mhs.csv'
 card = 0
 
-mem_min = 1000
-mem_max = 1500
-mem_step = 10
-core_min = 700
-core_max = 1200
-core_step = 50
+mem_min = 1250
+mem_max = 1460
+mem_step = 12
+core_min = 830
+core_max = 890
+core_step = 12
 desired_accuracy_in_mhs = 0.001
 infinity = 1.0e24
 
