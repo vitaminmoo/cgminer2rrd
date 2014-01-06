@@ -11,7 +11,7 @@ card = 0
 
 mem_min = 1000
 mem_max = 1500
-mem_step = 50
+mem_step = 10
 core_min = 700
 core_max = 1200
 core_step = 50
@@ -39,7 +39,8 @@ skip = []
 try:
     with open(csv, 'r') as output:
         for mem, core, mhz in [_.split(',') for _ in output]:
-            skip.append((mem,core))
+            if mem != "mem":
+                skip.append((int(mem),int(core)))
 except IOError:
     with open(csv, 'w') as output:
     	output.write('mem,core,mhs\n')
