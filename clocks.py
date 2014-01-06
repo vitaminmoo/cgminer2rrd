@@ -37,11 +37,15 @@ skip = []
 try:
     with open(csv, 'r') as output:
         for mem, core, mhz in [_.split(',') for _ in output]:
-            skip.append((mem,core))
+            if mem != "mem":
+                skip.append((int(mem),int(core)))
+
 except IOError:
     with open(csv, 'w') as output:
     	output.write('mem,core,mhs\n')
     pass
+
+print skip
 
 with open(csv, 'a') as output:
     for mem, core in product(range(mem_min, mem_max, mem_step), range(core_min, core_max, core_step)):
