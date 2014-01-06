@@ -7,14 +7,14 @@ import api
 import sys
 
 csv='mhs.csv'
-card = 1
+card = 0
 
-mem_min = 1250
+mem_min = 1000
 mem_max = 1500
-mem_step = 5
-core_min = 780
-core_max = 800
-core_step = 5
+mem_step = 10
+core_min = 700
+core_max = 1200
+core_step = 50
 desired_accuracy_in_mhs = 0.001
 infinity = 1.0e24
 
@@ -33,13 +33,14 @@ def mean_confidence(data, confidence=0.95):
     print "h: " + str(h)
     return h
 
+
+
 skip = []
 try:
     with open(csv, 'r') as output:
         for mem, core, mhz in [_.split(',') for _ in output]:
             if mem != "mem":
                 skip.append((int(mem),int(core)))
-
 except IOError:
     with open(csv, 'w') as output:
     	output.write('mem,core,mhs\n')
