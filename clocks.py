@@ -46,8 +46,10 @@ except IOError:
     	output.write('mem,core,mhs\n')
     pass
 
+print skip
+
 with open(csv, 'a') as output:
-    for mem, core in product(range(mem_min, mem_max, mem_step), range(core_min, core_max, core_step)):
+    for mem, core in product(range(mem_min, mem_max+1, mem_step), range(core_min, core_max+1, core_step)):
         if not (mem, core) in skip:
             os.system('aticonfig --adapter=all --odsc=%i,%i >/dev/null' % (core,mem))
             samples = []
