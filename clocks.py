@@ -10,7 +10,7 @@ import sys
 import time
 
 csv='mhs.csv'
-card = 0
+card = 1
 
 mem_min = 1250
 mem_max = 1460
@@ -23,6 +23,7 @@ infinity = 1.0e24
 
 clock_command = 'aticonfig --adapter=all --odsc=%i,%i >/dev/null'
 
+sgminer = api.SGMiner()
 
 def mean_confidence(data, confidence=0.95):
     a = 1.0 * np.array(data)
@@ -59,7 +60,7 @@ with open(csv, 'a') as output:
             time.sleep(10) # wait 15s for first sample, 5s else
             while len(samples) < 3 or mean_confidence(samples) > desired_accuracy_in_mhs:
               time.sleep(5)
-              sample = api.devs()[card]['MHS 5s']
+              sample = sgminer.devs()[card]['MHS 5s']
               samples.extend([sample])
             mhs = np.mean(np.array(samples))
 

@@ -6,6 +6,17 @@ import os
 import re
 import rrdtool
 import sys
+import time
+
+sgminer = api.SGMiner()
+
+rras = [
+    'RRA:AVERAGE:0.5:1:720',     # 1h
+    'RRA:AVERAGE:0.5:120:720',   # 1d
+    'RRA:AVERAGE:0.5:840:720',   # 7d
+    'RRA:AVERAGE:0.5:3600:720',  # 30d
+    'RRA:AVERAGE:0.5:43800:720', # 365d
+]
 
 def sanitize(key):
     key = re.sub(r'%$', r'_Per', key)
@@ -40,7 +51,7 @@ def categorize(key):
     elif key == 'Last Share Difficulty':
         return 'GAUGE:20:0:U'
     else:
-        return 'COUNTER:20:U:U'
+        return 'DERIVE:20:0:U'
 
 def key_filter(key):
     if key in [
@@ -64,53 +75,49 @@ def get_data_sources(items):
 def get_values(data):
     return [str(sanitize_val(_, data[_])) for _ in sorted(data) if key_filter(_)]
 
-# first do the summary shit
-summary = api.summary()
 
-if not os.path.exists('summary.rrd'):
-    # create
-    items = get_items(summary)
+while True:
+    # first do the summary shit
+    summary = sgminer.summary()
     
-    data_sources = get_data_sources(items)
-    print "summary bs:"
-    print json.dumps(data_sources, indent=2)
-    rrdtool.create(
-        'summary.rrd',
-        '--step', '5',
-        data_sources,
-        'RRA:AVERAGE:0.5:1:720',     # 1h
-        'RRA:AVERAGE:0.5:120:720',   # 1d
-        'RRA:AVERAGE:0.5:840:720',   # 7d
-        'RRA:AVERAGE:0.5:3600:720',  # 30d
-        'RRA:AVERAGE:0.5:43800:720', # 365d
-    )
-else:
+    if not os.path.exists('summary.rrd'):
+        # create
+        items = get_items(summary)
+        
+        data_sources = get_data_sources(items)
+        print "summary bs:"
+        print json.dumps(data_sources, indent=2)
+        rrdtool.create(
+            'summary.rrd',
+            '--step', '5',
+            data_sources,
+            rras
+        )
+
     # update
     items = get_values(summary)
     rrdtool.update('summary.rrd','N:%s' % ':'.join(items))
+    
+    # now handle each card
+    devs = sgminer.devs()
+    
+    # create
+    for dev in devs:
+        rrd = 'dev-%s.rrd' % dev["GPU"]
+        if not os.path.exists(rrd):
+            items = get_items(dev)
+            data_sources = get_data_sources(items)
+            print "creating file '%s'" % rrd
+            print json.dumps(data_sources, indent=2)
+            rrdtool.create(
+                rrd,
+                '--step', '5',
+                data_sources,
+                rras
+            )
 
-# now handle each card
-devs = api.devs()
-
-# create
-for dev in devs:
-    rrd = 'dev-%s.rrd' % dev["GPU"]
-    if not os.path.exists(rrd):
-        items = get_items(dev)
-        data_sources = get_data_sources(items)
-        print "creating file '%s'" % rrd
-        print json.dumps(data_sources, indent=2)
-        rrdtool.create(
-            rrd,
-            '--step', '5',
-            data_sources,
-            'RRA:AVERAGE:0.5:1:720',     # 1h
-            'RRA:AVERAGE:0.5:120:720',   # 1d
-            'RRA:AVERAGE:0.5:840:720',   # 7d
-            'RRA:AVERAGE:0.5:3600:720',  # 30d
-            'RRA:AVERAGE:0.5:43800:720', # 365d
-        )
-    else:
         # update
         values = get_values(dev)
         rrdtool.update(rrd, 'N:%s' % ':'.join(values))
+
+    time.sleep(5)
