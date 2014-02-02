@@ -30,7 +30,7 @@ To view data, use `./graph.py`, which will render the more useful generated RRD 
 To generate a heatmap of your core/mem clock hashrate output:
 
 1. Be aware of your card's stable range of core and memory clock settings
-2. Customize the top of poll.py to specify these settings
-3. Run `./poll.py` and wait several days
-4. If `./poll.py` crashes or you have to stop it, just restart it when you can - it won't retry settings that it has already tried
-5. Once `./poll.py` has finished, generate a graph with `R --no-save < clocks.R`
+2. Customize the top of clocks.py to specify these settings
+3. Run `./clocks.py` and wait several days
+4. If `./clocks.py` crashes or you have to stop it, just restart it when you can - it won't retry settings that it has already tried
+5. Once `./clocks.py` has finished, generate a graph with `R --no-save < clocks.R`
